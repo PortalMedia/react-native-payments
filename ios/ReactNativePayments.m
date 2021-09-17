@@ -334,24 +334,30 @@ RCT_EXPORT_METHOD(handleDetailsUpdate: (NSDictionary *)details
 
 - (void)setRequiredShippingAddressFieldsFromOptions:(NSDictionary *_Nonnull)options
 {
+    bool requestShipping = [[options objectForKey:@"requestShipping"] boolValue];
+    bool requestBilling = [[options objectForKey:@"requestBilling"] boolValue];
+    bool requestPayerName = [[options objectForKey:@"requestPayerName"] boolValue];
+    bool requestPayerPhone = [[options objectForKey:@"requestPayerPhone"] boolValue];
+    bool requestPayerEmail = [[options objectForKey:@"requestPayerEmail"] boolValue];
+
     // Request Shipping
-    if (options[@"requestShipping"]) {
+    if (requestShipping) {
         self.paymentRequest.requiredShippingAddressFields = PKAddressFieldPostalAddress;
     }
 
-    if (options[@"requestBilling"]) {
+    if (requestBilling) {
         self.paymentRequest.requiredBillingAddressFields = PKAddressFieldPostalAddress;
     }
-    
-    if (options[@"requestPayerName"]) {
+
+    if (requestPayerName) {
         self.paymentRequest.requiredShippingAddressFields = self.paymentRequest.requiredShippingAddressFields | PKAddressFieldName;
     }
-    
-    if (options[@"requestPayerPhone"]) {
+
+    if (requestPayerPhone) {
         self.paymentRequest.requiredShippingAddressFields = self.paymentRequest.requiredShippingAddressFields | PKAddressFieldPhone;
     }
-    
-    if (options[@"requestPayerEmail"]) {
+
+    if (requestPayerEmail) {
         self.paymentRequest.requiredShippingAddressFields = self.paymentRequest.requiredShippingAddressFields | PKAddressFieldEmail;
     }
 }
