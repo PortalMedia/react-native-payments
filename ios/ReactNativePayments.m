@@ -339,6 +339,7 @@ RCT_EXPORT_METHOD(handleDetailsUpdate: (NSDictionary *)details
     bool requestPayerName = [[options objectForKey:@"requestPayerName"] boolValue];
     bool requestPayerPhone = [[options objectForKey:@"requestPayerPhone"] boolValue];
     bool requestPayerEmail = [[options objectForKey:@"requestPayerEmail"] boolValue];
+    NSString *shippingType = options[@"shippingType"];
 
     // Request Shipping
     if (requestShipping) {
@@ -359,6 +360,18 @@ RCT_EXPORT_METHOD(handleDetailsUpdate: (NSDictionary *)details
 
     if (requestPayerEmail) {
         self.paymentRequest.requiredShippingAddressFields = self.paymentRequest.requiredShippingAddressFields | PKAddressFieldEmail;
+    }
+
+    if ([shippingType isEqualToString:@"pickup"]) {
+        self.paymentRequest.shippingType = PKShippingTypeStorePickup;
+    }
+
+    if ([shippingType isEqualToString:@"shipping"]) {
+        self.paymentRequest.shippingType = PKShippingTypeShipping;
+    }
+
+    if ([shippingType isEqualToString:@"delivery"]) {
+        self.paymentRequest.shippingType = PKShippingTypeDelivery;
     }
 }
 
