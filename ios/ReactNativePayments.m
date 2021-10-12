@@ -129,8 +129,11 @@ RCT_EXPORT_METHOD(handleDetailsUpdate: (NSDictionary *)details
     }
     
     if (self.shippingContactCompletion) {
-        // Display shipping address error when shipping is needed and shipping method count is below 1
-        if (self.initialOptions[@"requestShipping"] && [shippingMethods count] == 0) {
+        NSString *shippingType =  self.initialOptions[@"shippingType"];
+        bool requestShipping = [[self.initialOptions objectForKey:@"requestShipping"] boolValue];
+
+        // Display shipping address error when shipping is needed and shipping method count is below 1 and shipping type is not delivery
+        if (requestShipping && [shippingMethods count] == 0 && ![shippingType isEqualToString:@"delivery"]) {
             return self.shippingContactCompletion(
                                                   PKPaymentAuthorizationStatusInvalidShippingPostalAddress,
                                                   shippingMethods,
@@ -143,9 +146,8 @@ RCT_EXPORT_METHOD(handleDetailsUpdate: (NSDictionary *)details
                                            paymentSummaryItems
                                            );
         }
-        // Invalidate `aself.shippingContactCompletion`
+        // Invalidate `self.shippingContactCompletion`
         self.shippingContactCompletion = nil;
-        
     }
     
     // Call callback
