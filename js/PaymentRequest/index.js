@@ -328,7 +328,7 @@ export default class PaymentRequest {
     }
 
     return {
-      paymentData: isSimulator ? null : JSON.parse(serializedPaymentData),
+      paymentData: isSimulator ? null : serializedPaymentData,
       billingContact,
       shippingContact,
       paymentToken,
@@ -378,11 +378,16 @@ export default class PaymentRequest {
       this._shippingAddress = shippingAddress;
     }
 
+    const platformDetails = this._getPlatformDetails(details);
+    if (!this._shippingAddress) {
+      this._shippingAddress = platformDetails.shippingContact;
+    }
+
     const paymentResponse = new PaymentResponse({
       requestId: this.id,
       methodName: IS_IOS ? 'apple-pay' : 'android-pay',
       shippingAddress: this._options.requestShipping ? this._shippingAddress : null,
-      details: this._getPlatformDetails(details),
+      details: platformDetails,
       shippingOption: IS_IOS ? this._shippingOption : null,
       payerName: this._options.requestPayerName ? this._shippingAddress.recipient : null,
       payerPhone: this._options.requestPayerPhone ? this._shippingAddress.phone : null,
@@ -504,4 +509,3 @@ export default class PaymentRequest {
 
   static canMakePaymentsUsingNetworks = NativePayments.canMakePaymentsUsingNetworks;
 }
-

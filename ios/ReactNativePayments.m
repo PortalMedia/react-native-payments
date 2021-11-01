@@ -129,8 +129,11 @@ RCT_EXPORT_METHOD(handleDetailsUpdate: (NSDictionary *)details
     }
     
     if (self.shippingContactCompletion) {
-        // Display shipping address error when shipping is needed and shipping method count is below 1
-        if (self.initialOptions[@"requestShipping"] && [shippingMethods count] == 0) {
+        NSString *shippingType =  self.initialOptions[@"shippingType"];
+        bool requestShipping = [[self.initialOptions objectForKey:@"requestShipping"] boolValue];
+
+        // Display shipping address error when shipping is needed and shipping method count is below 1 and shipping type is not delivery
+        if (requestShipping && [shippingMethods count] == 0 && ![shippingType isEqualToString:@"delivery"]) {
             return self.shippingContactCompletion(
                                                   PKPaymentAuthorizationStatusInvalidShippingPostalAddress,
                                                   shippingMethods,
@@ -143,9 +146,8 @@ RCT_EXPORT_METHOD(handleDetailsUpdate: (NSDictionary *)details
                                            paymentSummaryItems
                                            );
         }
-        // Invalidate `aself.shippingContactCompletion`
+        // Invalidate `self.shippingContactCompletion`
         self.shippingContactCompletion = nil;
-        
     }
     
     // Call callback
@@ -334,25 +336,44 @@ RCT_EXPORT_METHOD(handleDetailsUpdate: (NSDictionary *)details
 
 - (void)setRequiredShippingAddressFieldsFromOptions:(NSDictionary *_Nonnull)options
 {
+    bool requestShipping = [[options objectForKey:@"requestShipping"] boolValue];
+    bool requestBilling = [[options objectForKey:@"requestBilling"] boolValue];
+    bool requestPayerName = [[options objectForKey:@"requestPayerName"] boolValue];
+    bool requestPayerPhone = [[options objectForKey:@"requestPayerPhone"] boolValue];
+    bool requestPayerEmail = [[options objectForKey:@"requestPayerEmail"] boolValue];
+    NSString *shippingType = options[@"shippingType"];
+
     // Request Shipping
-    if (options[@"requestShipping"]) {
+    if (requestShipping) {
         self.paymentRequest.requiredShippingAddressFields = PKAddressFieldPostalAddress;
     }
 
-    if (options[@"requestBilling"]) {
+    if (requestBilling) {
         self.paymentRequest.requiredBillingAddressFields = PKAddressFieldPostalAddress;
     }
-    
-    if (options[@"requestPayerName"]) {
+
+    if (requestPayerName) {
         self.paymentRequest.requiredShippingAddressFields = self.paymentRequest.requiredShippingAddressFields | PKAddressFieldName;
     }
-    
-    if (options[@"requestPayerPhone"]) {
+
+    if (requestPayerPhone) {
         self.paymentRequest.requiredShippingAddressFields = self.paymentRequest.requiredShippingAddressFields | PKAddressFieldPhone;
     }
-    
-    if (options[@"requestPayerEmail"]) {
+
+    if (requestPayerEmail) {
         self.paymentRequest.requiredShippingAddressFields = self.paymentRequest.requiredShippingAddressFields | PKAddressFieldEmail;
+    }
+
+    if ([shippingType isEqualToString:@"pickup"]) {
+        self.paymentRequest.shippingType = PKShippingTypeStorePickup;
+    }
+
+    if ([shippingType isEqualToString:@"shipping"]) {
+        self.paymentRequest.shippingType = PKShippingTypeShipping;
+    }
+
+    if ([shippingType isEqualToString:@"delivery"]) {
+        self.paymentRequest.shippingType = PKShippingTypeDelivery;
     }
 }
 
