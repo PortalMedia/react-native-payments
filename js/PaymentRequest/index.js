@@ -116,7 +116,6 @@ export default class PaymentRequest {
   _userDismissSubscription: any; // TODO: - add proper type annotation
   _userAcceptSubscription: any; // TODO: - add proper type annotation
   _gatewayErrorSubscription: any; // TODO: - add proper type annotation
-  _shippingAddressChangesCount: number;
 
   _shippingAddressChangeFn: PaymentRequestUpdateEvent => void; // function provided by user
   _shippingOptionChangeFn: PaymentRequestUpdateEvent => void; // function provided by user
@@ -203,10 +202,6 @@ export default class PaymentRequest {
     // Setup event listeners
     this._setupEventListeners();
 
-    // Set the amount of times `_handleShippingAddressChange` has been called.
-    // This is used on iOS to noop the first call.
-    this._shippingAddressChangesCount = 0;
-
     const platformMethodData = getPlatformMethodData(methodData, Platform.OS);
     const normalizedDetails = convertDetailAmountsToString(details);
 
@@ -268,14 +263,6 @@ export default class PaymentRequest {
       SHIPPING_ADDRESS_CHANGE_EVENT,
       this
     );
-    this._shippingAddressChangesCount++;
-
-    // On iOS, this event fires when the PKPaymentRequest is initialized.
-    // So on iOS, we track the amount of times `_handleShippingAddressChange` gets called
-    // and noop the first call.
-    if (IS_IOS && this._shippingAddressChangesCount === 1) {
-      return event.updateWith(this._details);
-    }
 
     // Eventually calls `PaymentRequestUpdateEvent._handleDetailsUpdate` when
     // after a details are returned
