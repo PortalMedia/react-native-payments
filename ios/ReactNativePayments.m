@@ -129,11 +129,10 @@ RCT_EXPORT_METHOD(handleDetailsUpdate: (NSDictionary *)details
     }
     
     if (self.shippingContactCompletion) {
-        NSString *shippingType =  self.initialOptions[@"shippingType"];
         bool requestShipping = [[self.initialOptions objectForKey:@"requestShipping"] boolValue];
 
         // Display shipping address error when shipping is needed and shipping method count is below 1 and shipping type is not delivery
-        if (requestShipping && [shippingMethods count] == 0 && ![shippingType isEqualToString:@"delivery"]) {
+        if (requestShipping && [shippingMethods count] == 0) {
             return self.shippingContactCompletion(
                                                   PKPaymentAuthorizationStatusInvalidShippingPostalAddress,
                                                   shippingMethods,
