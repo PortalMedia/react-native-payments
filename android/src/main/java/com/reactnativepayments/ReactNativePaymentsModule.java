@@ -92,8 +92,7 @@ public class ReactNativePaymentsModule extends ReactContextBaseJavaModule implem
                             }
                             break;
                         case Activity.RESULT_CANCELED:
-                            sendEvent(reactContext, "NativePayments:onuserdismiss", null);
-
+                            sendEvent(reactContext, "NativePayments:onpaymentdismiss", null);
                             break;
                         default:
                             Log.i(REACT_CLASS, "ANDROID PAY ERROR? " + errorCode);

@@ -99,7 +99,7 @@ RCT_EXPORT_METHOD(complete: (NSString *)paymentStatus
 -(void) paymentAuthorizationViewControllerDidFinish:(PKPaymentAuthorizationViewController *)controller
 {
     [controller dismissViewControllerAnimated:YES completion:nil];
-    [self.bridge.eventDispatcher sendDeviceEventWithName:@"NativePayments:onuserdismiss" body:nil];
+    [self.bridge.eventDispatcher sendDeviceEventWithName:@"NativePayments:onpaymentdismiss" body:nil];
 }
 
 RCT_EXPORT_METHOD(handleDetailsUpdate: (NSDictionary *)details

@@ -48,9 +48,10 @@ import {
   MODULE_SCOPING,
   SHIPPING_ADDRESS_CHANGE_EVENT,
   SHIPPING_OPTION_CHANGE_EVENT,
+  PAYMENT_DISMISS_EVENT,
   INTERNAL_SHIPPING_ADDRESS_CHANGE_EVENT,
   INTERNAL_SHIPPING_OPTION_CHANGE_EVENT,
-  USER_DISMISS_EVENT,
+  INTERNAL_PAYMENT_DISMISS_EVENT,
   USER_ACCEPT_EVENT,
   GATEWAY_ERROR_EVENT,
   SUPPORTED_METHOD_NAME
@@ -113,12 +114,13 @@ export default class PaymentRequest {
   _acceptPromiseRejecter: (reason: any) => void;
   _shippingAddressChangeSubscription: any; // TODO: - add proper type annotation
   _shippingOptionChangeSubscription: any; // TODO: - add proper type annotation
-  _userDismissSubscription: any; // TODO: - add proper type annotation
+  _paymentDismissSubscription: any; // TODO: - add proper type annotation
   _userAcceptSubscription: any; // TODO: - add proper type annotation
   _gatewayErrorSubscription: any; // TODO: - add proper type annotation
 
   _shippingAddressChangeFn: PaymentRequestUpdateEvent => void; // function provided by user
   _shippingOptionChangeFn: PaymentRequestUpdateEvent => void; // function provided by user
+  _paymentDismissFn: () => void; // function provided by user
 
   constructor(
     methodData: Array<PaymentMethodData> = [],
@@ -227,10 +229,6 @@ export default class PaymentRequest {
 
   _setupEventListeners() {
     // Internal Events
-    this._userDismissSubscription = DeviceEventEmitter.addListener(
-      USER_DISMISS_EVENT,
-      this._closePaymentRequest.bind(this)
-    );
     this._userAcceptSubscription = DeviceEventEmitter.addListener(
       USER_ACCEPT_EVENT,
       this._handleUserAccept.bind(this)
@@ -252,6 +250,11 @@ export default class PaymentRequest {
       this._shippingAddressChangeSubscription = DeviceEventEmitter.addListener(
         INTERNAL_SHIPPING_ADDRESS_CHANGE_EVENT,
         this._handleShippingAddressChange.bind(this)
+      );
+
+      this._paymentDismissSubscription = DeviceEventEmitter.addListener(
+        INTERNAL_PAYMENT_DISMISS_EVENT,
+        this._handlePaymentDismiss.bind(this)
       );
     }
   }
@@ -279,6 +282,11 @@ export default class PaymentRequest {
     );
 
     this._shippingOptionChangeFn && this._shippingOptionChangeFn(event);
+  }
+
+  _handlePaymentDismiss() {
+    this._paymentDismissFn && this._paymentDismissFn();
+    this._closePaymentRequest();
   }
 
   _getPlatformDetails(details: *) {
@@ -401,7 +409,7 @@ export default class PaymentRequest {
 
   _removeEventListeners() {
     // Internal Events
-    this._userDismissSubscription.remove();
+    this._paymentDismissSubscription.remove();
     this._userAcceptSubscription.remove();
 
     if (IS_IOS) {
@@ -413,7 +421,7 @@ export default class PaymentRequest {
   // https://www.w3.org/TR/payment-request/#onshippingaddresschange-attribute
   // https://www.w3.org/TR/payment-request/#onshippingoptionchange-attribute
   addEventListener(
-    eventName: 'shippingaddresschange' | 'shippingoptionchange',
+    eventName: 'shippingaddresschange' | 'shippingoptionchange' | 'paymentdismiss',
     fn: e => Promise<any>
   ) {
     if (eventName === SHIPPING_ADDRESS_CHANGE_EVENT) {
@@ -422,6 +430,10 @@ export default class PaymentRequest {
 
     if (eventName === SHIPPING_OPTION_CHANGE_EVENT) {
       return (this._shippingOptionChangeFn = fn.bind(this));
+    }
+
+    if (eventName === PAYMENT_DISMISS_EVENT) {
+      return (this._paymentDismissFn = fn.bind(this));
     }
   }
 
