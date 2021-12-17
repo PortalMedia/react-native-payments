@@ -29,7 +29,8 @@ RCT_EXPORT_METHOD(canMakePaymentsUsingNetworks:
                   (NSArray *)paymentNetworks
                   callback:(RCTResponseSenderBlock)callback)
 {
-    callback(@[[NSNull null], @([PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:paymentNetworks])]);
+    NSArray *networks = @[PKPaymentNetworkAmex, PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkDiscover];
+    callback(@[[NSNull null], @([PKPaymentAuthorizationViewController canMakePayments] && [PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:networks])]);
 }
 
 RCT_EXPORT_METHOD(createPaymentRequest: (NSDictionary *)methodData
@@ -99,7 +100,7 @@ RCT_EXPORT_METHOD(complete: (NSString *)paymentStatus
 -(void) paymentAuthorizationViewControllerDidFinish:(PKPaymentAuthorizationViewController *)controller
 {
     [controller dismissViewControllerAnimated:YES completion:nil];
-    [self.bridge.eventDispatcher sendDeviceEventWithName:@"NativePayments:onuserdismiss" body:nil];
+    [self.bridge.eventDispatcher sendDeviceEventWithName:@"NativePayments:onpaymentdismiss" body:nil];
 }
 
 RCT_EXPORT_METHOD(handleDetailsUpdate: (NSDictionary *)details

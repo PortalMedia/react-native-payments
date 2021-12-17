@@ -5,9 +5,10 @@ const {
   MODULE_SCOPING,
   SHIPPING_ADDRESS_CHANGE_EVENT,
   SHIPPING_OPTION_CHANGE_EVENT,
+  PAYMENT_DISMISS_EVENT,
   INTERNAL_SHIPPING_ADDRESS_CHANGE_EVENT,
   INTERNAL_SHIPPING_OPTION_CHANGE_EVENT,
-  USER_DISMISS_EVENT,
+  INTERNAL_PAYMENT_DISMISS_EVENT,
   USER_ACCEPT_EVENT,
   SUPPORTED_METHOD_NAME
 } = require('../constants');
@@ -22,6 +23,12 @@ describe('constants', () => {
   describe('SHIPPING_ADDRESS_CHANGE_EVENT', () => {
     it('should be equal to `shippingaddresschange`', () => {
       expect(SHIPPING_ADDRESS_CHANGE_EVENT).toBe('shippingaddresschange');
+    });
+  });
+
+  describe('PAYMENT_DISMISS_EVENT', () => {
+    it('should be equal to `paymentdismiss`', () => {
+      expect(PAYMENT_DISMISS_EVENT).toBe('paymentdismiss');
     });
   });
 
@@ -47,9 +54,9 @@ describe('constants', () => {
     });
   });
 
-  describe('USER_DISMISS_EVENT', () => {
-    it('should be equal to `NativePayments:onuserdismiss`', () => {
-      expect(USER_DISMISS_EVENT).toBe('NativePayments:onuserdismiss');
+  describe('INTERNAL_PAYMENT_DISMISS_EVENT', () => {
+    it('should be equal to `NativePayments:onpaymentdismiss`', () => {
+      expect(INTERNAL_PAYMENT_DISMISS_EVENT).toBe('NativePayments:onpaymentdismiss');
     });
   });
 
