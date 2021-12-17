@@ -29,7 +29,8 @@ RCT_EXPORT_METHOD(canMakePaymentsUsingNetworks:
                   (NSArray *)paymentNetworks
                   callback:(RCTResponseSenderBlock)callback)
 {
-    callback(@[[NSNull null], @([PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:paymentNetworks])]);
+    NSArray *networks = @[PKPaymentNetworkAmex, PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkDiscover];
+    callback(@[[NSNull null], @([PKPaymentAuthorizationViewController canMakePayments] && [PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:networks])]);
 }
 
 RCT_EXPORT_METHOD(createPaymentRequest: (NSDictionary *)methodData
