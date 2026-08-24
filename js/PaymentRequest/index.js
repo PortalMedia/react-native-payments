@@ -19,7 +19,7 @@ import type PaymentResponseType from './PaymentResponse';
 
 // Modules
 import { DeviceEventEmitter, Platform } from 'react-native';
-import uuid from 'uuid/v1';
+import { v1 as uuid } from 'uuid';
 
 import NativePayments from '../NativeBridge';
 import PaymentResponse from './PaymentResponse';
